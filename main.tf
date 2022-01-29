@@ -12,13 +12,13 @@ terraform {
 */
 provider "aws" {
   region = "us-east-1"
-  access_key = "AKIAVXZTRLHNLGL3GDGY"
-  secret_key = "Lp1iiOld1IdbL2tELxGweApi1cKxpLsfZFfM5pE1"
+  // access_key = ""
+  // secret_key = ""
   //  If you have entered your credentials in AWS CLI before, you do not need to use these arguments.
 }
 locals {
   github-repo = "https://github.com/ElifPoyraz/phonebook-devops.git"
-  github-file-url = "https://raw.githubusercontent.com/davidclarusway/project-204/master/"
+  github-file-url = "https://raw.githubusercontent.com/ElifPoyraz/phonebook-devops/master/"
 }
 data "aws_caller_identity" "current" {}
 data "aws_region" "current" {
