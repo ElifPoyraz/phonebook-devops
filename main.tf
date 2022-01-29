@@ -101,7 +101,7 @@ data "template_file" "worker" {
     yum install python-pip -y
     pip install ec2instanceconnectcli
     eval "$(mssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no  \
-     --region ${data.aws_region.current.name} ${aws_instance.docker-machine-leader-manager.id} docker swarm join-token worker | grep -i 'docker')"
+    --region ${data.aws_region.current.name} ${aws_instance.docker-machine-leader-manager.id} docker swarm join-token worker | grep -i 'docker')"
     # uninstall aws cli version 1
     rm -rf /bin/aws
     curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
@@ -110,18 +110,18 @@ data "template_file" "worker" {
   EOF
 }
 resource "aws_ecr_repository" "ecr-repo" {
-  name                 = "davids-clarusway-repo/phonebook-app"
+  name                 = "elif-clarusway-repo/phonebook-app"
   image_tag_mutability = "MUTABLE"
   image_scanning_configuration {
     scan_on_push = false
   }
 }
 resource "aws_iam_instance_profile" "ec2ecr-profile" {
-  name = "testswarmprofile"
+  name = "elifswarmprofile"
   role = aws_iam_role.ec2fulltoecr.name
 }
 resource "aws_iam_role" "ec2fulltoecr" {
-  name = "testec2roletoecr"
+  name = "elifec2roletoecr"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -163,43 +163,43 @@ resource "aws_iam_role" "ec2fulltoecr" {
 resource "aws_instance" "docker-machine-leader-manager" {
   ami             = "ami-087c17d1fe0178315"
   instance_type   = "t2.micro"
-  key_name        = "davidskey"
+  key_name        = "myfirstSSHkeypair"
   root_block_device {
       volume_size = 16
   }  
   //  Write your pem file name
-  security_groups = ["test-docker-swarm-sec-gr"]
+  security_groups = ["elif-docker-swarm-sec-gr"]
   iam_instance_profile = aws_iam_instance_profile.ec2ecr-profile.name
   user_data = data.template_file.leader-master.rendered
   tags = {
-    Name = "Davids-Docker-Swarm-Leader-Manager"
+    Name = "Elifs-Docker-Swarm-Leader-Manager"
   }
 }
 resource "aws_instance" "docker-machine-managers" {
   ami             = "ami-087c17d1fe0178315"
   instance_type   = "t2.micro"
-  key_name        = "davidskey"
+  key_name        = "myfirstSSHkeypair"
   //  Write your pem file name
-  security_groups = ["test-docker-swarm-sec-gr"]
+  security_groups = ["elif-docker-swarm-sec-gr"]
   iam_instance_profile = aws_iam_instance_profile.ec2ecr-profile.name
   count = 2
   user_data = data.template_file.manager.rendered
   tags = {
-    Name = "Davids-Docker-Swarm-Manager-${count.index + 1}"
+    Name = "Elifs-Docker-Swarm-Manager-${count.index + 1}"
   }
   depends_on = [aws_instance.docker-machine-leader-manager]
 }
 resource "aws_instance" "docker-machine-workers" {
   ami             = "ami-087c17d1fe0178315"
   instance_type   = "t2.micro"
-  key_name        = "davidskey"
+  key_name        = "myfirstSSHkeypair"
   //  Write your pem file name
-  security_groups = ["test-docker-swarm-sec-gr"]
+  security_groups = ["elif-docker-swarm-sec-gr"]
   iam_instance_profile = aws_iam_instance_profile.ec2ecr-profile.name
   count = 2
   user_data = data.template_file.worker.rendered
   tags = {
-    Name = "Davids-Docker-Swarm-Worker-${count.index + 1}"
+    Name = "Elifs-Docker-Swarm-Worker-${count.index + 1}"
   }
   depends_on = [aws_instance.docker-machine-leader-manager]
 }
@@ -207,7 +207,7 @@ variable "sg-ports" {
   default = [80, 22, 2377, 7946, 8080]
 }
 resource "aws_security_group" "tf-docker-sec-gr" {
-  name = "test-docker-swarm-sec-gr"
+  name = "elif-docker-swarm-sec-gr"
   tags = {
     Name = "swarm-sec-gr"
   }
